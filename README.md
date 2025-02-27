@@ -105,3 +105,93 @@ Download and Inspect
 ![image](https://github.com/user-attachments/assets/913ca0cc-5031-42cf-ae15-dc0720181d13)
 
 
+Prometheus Metrics Types
+-
+- There are 4 types :- Guages, Counters, Summaries, Histograms
+
+1. **Guage Metric**
+- Guages are just metrics that naturally go up/down as they represent current count of memery, queue length, disk space, temp. Used to measure numeric values and expose them as metric.
+- When we add guage to application, instrumentation client libraries give us couple of methods to update value
+- Set method :- to set guage for any arbitrary value but there are also methods to increase/decrease value in relative way.
+
+![image](https://github.com/user-attachments/assets/cbc73c3a-0eea-4152-9208-ee1e8f9cd10b)
+
+- In some client libs there're helper methods to store current time as unique timestamp can be used to expose last time some event has happened like boot time, process start time, last run
+
+- In metrics exposition format, guage just shows up single time series like below.
+
+![image](https://github.com/user-attachments/assets/7b58a84c-9980-443f-8883-898cd4fa88d6)
+
+![image](https://github.com/user-attachments/assets/b78c6d88-9866-4302-84a5-f689401e475e)
+
+
+
+2. **Counters**
+- Represent cumulative count over time like total HTTP requests or total time to handle them.
+- Also unlike guages, counters only go up.
+
+![image](https://github.com/user-attachments/assets/2194ff73-92f4-4edb-b7ad-087c10e22832)
+
+- Only exception is when process thats tracking and exposing counter crashes or restarts for some reason. In that cases counter value restarts from 0.
+
+![image](https://github.com/user-attachments/assets/00147390-a6ca-4e82-90be-62b489216340)
+
+- Counter have 2 methods to update value
+  - Inc method to increment value by 1
+  - For fractional/integer values larger than 1, we can use add() method to increment value by arbitrary amount
+
+![image](https://github.com/user-attachments/assets/c4d93b74-de33-4e6d-a746-736cbf1d548f)
+
+- Counters dont have any methods to increase/decrease values
+
+- In the exposition format, counters look exactly like guages, excpet optional metadata indicates that type of metric is counter
+
+
+3. **Summaries**
+- Summaries are useful if we want to track distribution of request latencies or some other set of numeric values or percentile or
+
+![image](https://github.com/user-attachments/assets/0517d7e0-4679-4ed6-b068-5636de2d9531)
+
+- To create summary in instrumentation we specify which quantiles we want to calculate along with error margins and when we want to track specific value, we call observe() method on summary object with that value
+
+![image](https://github.com/user-attachments/assets/df8569f6-5641-4e54-8627-dffa6119f509)
+
+- If we've handled HTTP request that took 2,3 sec, we can use observe() method with 2.3 to record the duration
+
+![image](https://github.com/user-attachments/assets/ad0e60cc-852c-4cfa-b22c-9e76f5581777)
+
+- In expostion, summaries are expanded into set of time series, one for each computed target quantile and total no/sum of observations
+  - Here _count means total requests, _sum means total time to handle requests
+ 
+![image](https://github.com/user-attachments/assets/de3963be-769d-43a1-9449-06b3916a10b4)
+
+- In output of summary, it is collection of guage and counter metrics so in promQL we can use individual series like counters and guages
+
+
+4. **Histograms**
+- Similar to summaries and allow to track distribution of set of numeric values. But instead of computing pre-computed quantiles, histograms counts values in set of ranged buckets to give idea of how many values we've seen for each range.
+- Also they are cumulative in nature. Ecah bucket contains count of previous lower-ranged buckets
+
+![image](https://github.com/user-attachments/assets/53d6d16d-5fee-4ddc-8d59-3b15090de4f7)
+
+- In cumulative histogram, we only need to define upper boundary of each bucket
+
+- To create histogram, we've to provide set of bucket ranges to constructor and then observe values like request durations into histogram
+
+![image](https://github.com/user-attachments/assets/fb897a77-00f5-4090-a982-d4cd57ee50ab)
+
+- Histogram auto take care of incrementing right bucket counters
+
+- In exposition, each bucket is exposed as single counter time series with "le" label indicating upper value boundary of that bucket
+
+![image](https://github.com/user-attachments/assets/36159fee-2866-41a2-ad1c-6fa3f07a5fea)
+
+- Buckets should be fine grained but at same time should not be many in number to destroy prometheus server
+- Histogram is set of counters and query each one of them individually
+
+- To count approx percentile from histogram :- histogram_quantile() function
+- Also as buckets are counters we'll almost want to wrap either rate() or increase() function around histogram bucket before passing them into histogram quantile.
+
+![image](https://github.com/user-attachments/assets/a4fbb960-a8d3-4ed3-9292-866f419f6b79)
+
+- So we can count events in known time range.
