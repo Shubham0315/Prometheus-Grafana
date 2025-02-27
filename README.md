@@ -195,3 +195,26 @@ Prometheus Metrics Types
 ![image](https://github.com/user-attachments/assets/a4fbb960-a8d3-4ed3-9292-866f419f6b79)
 
 - So we can count events in known time range.
+
+
+Counter rates and Increases in PromQL
+-
+- When dealing with counter rates, we always want to compute their rate of increase. PromQL gives us 3 diff functions to tell how fast counter is going up.
+  - rate(), irate(), increase()
+- Counter metrics are usually useless in their raw form. Except for occasional resets to zero when process restarts, they only ever go up
+- We need how fast counter has gone up over some defined recent time window. (e.g:- current request rate vc CPU usage)
+
+- rate() :- computes per second rate of increase averaged over the entire input range window.
+- irate() :- computes much faster reacting instantaneous rate by only considering last 2 samples under provided window for its rate calculation.
+- increase() :- behaves like rate except that it returns absolute value increase over provided time rather than a per second increase
+
+- All the three functions need to find at least 2 samples for eachs eries under provided window to tell how fast counter is going up.
+
+- Imagine we've a counter metric and we've to calculate its rate of increase at single point of time. So for rate of increase fucniton we select five minutes range window
+
+![image](https://github.com/user-attachments/assets/23b0de51-b9ae-4ce1-8e82-1ef2fd7f69b1)
+
+- Question here is how these functions deal with counter resets. To compensate for resets, we first scan entire inout range for samples having lower value than previous and assume any value decrease must have been a reset. Since counters always start from zero after reset, we can assume actual no of increases was at least value of sample before reset plus lower subsequent value. So we can add values of the reset to previous ones
+
+![image](https://github.com/user-attachments/assets/3c3f292d-5cbe-42f7-a796-ec6d262051e6)
+
