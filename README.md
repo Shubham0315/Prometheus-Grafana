@@ -66,3 +66,23 @@ Prometheus Features
 - **Service Discovery**
   - Due to pull based, it knows which targets to monitor, how to fetch metrics from them, attach right labels to them
   - We can manually add targets in config file but it is infeasible today. So prometheus has variety of service discovery mechanisms like DNS, K8S, etc. 
+
+
+Download and Inspect 
+-
+- After downloading we get below list of files
+
+![image](https://github.com/user-attachments/assets/500c07b8-e660-47d5-8a91-32ae964ed5f4)
+
+- Promtool is a command line tool to check config, running queries or other debugging and testing purposes.
+- We only need prometheus config file and server binary. Edit the existing config file and write from scratch
+- Here "global" section allows us to set no of global defaults for prometheus behaviour where define default scrape_interval: 5s
+- Second section is "scrape_configs" to tell which targets to be monitored, how to discover and scrape them and what labels to apply to each target. Here add scrape config to make prometheus pull metrics from itself
+  - Every scrape_config needs to have "job_name"  which sets default value for job label for any pulled time series. Job label is usually used to group together one or more targets of same type (multiple replicated instances of API server). Here in prometheus server there is only one target which will be listening on port 9090, that is TCP scrape address we can configure
+  - Endpoint URL :- **http://localhost:9090/metrics**
+ 
+  ![image](https://github.com/user-attachments/assets/f4b11bd2-bf8b-42d7-a358-286e10694648)
+
+- In second scrape_config add 3 instances of demo service that pormLab is running publicly on internet. In prometheus pull-based model we can pull metrics from those demo service instances without having to reconfigure
+- Prometheus will load its config from prometheus.yml by default and will store the collected metrics in data/ subdirectory of PWD and will listen on port 9090
+- Now we can go to browser and check endpoint URL if prometheus works. The web interface gives bunch of diff status pages that tell us about build and runtime info of server.
