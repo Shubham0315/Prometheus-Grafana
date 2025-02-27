@@ -85,4 +85,23 @@ Download and Inspect
 
 - In second scrape_config add 3 instances of demo service that pormLab is running publicly on internet. In prometheus pull-based model we can pull metrics from those demo service instances without having to reconfigure
 - Prometheus will load its config from prometheus.yml by default and will store the collected metrics in data/ subdirectory of PWD and will listen on port 9090
-- Now we can go to browser and check endpoint URL if prometheus works. The web interface gives bunch of diff status pages that tell us about build and runtime info of server.
+- Now we can go to browser and check endpoint URL if prometheus works. The web interface gives bunch of diff status pages that tell us about build and runtime info of server. It also allows to query and visualize collected data using promQL
+
+![image](https://github.com/user-attachments/assets/0dc13c94-3bb5-4bfc-b985-b0ae94ce9433)
+
+- We can also check if the targets are correctly scraped :- Status - Targets
+- Here we can see all our targets are up means prometheus has successfully scraped metrics from each of them
+
+![image](https://github.com/user-attachments/assets/ef00e921-19b4-42aa-95fa-82f2389973ea)
+
+- Now go to graph page, where we can enter promQL queries and evaluate them to show results in table or graph over time
+
+![image](https://github.com/user-attachments/assets/3227d5ce-f764-444d-a858-c54034cefa3d)
+
+![image](https://github.com/user-attachments/assets/47a4dad7-b4b7-4db6-a87a-2652962d5601)
+
+- We can also compute the metrics using rate function like below. Use "rate" at beginning and give timeframe at last
+
+![image](https://github.com/user-attachments/assets/913ca0cc-5031-42cf-ae15-dc0720181d13)
+
+
