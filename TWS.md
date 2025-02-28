@@ -130,4 +130,50 @@ Practical
 
 Grafana 
 -
-- 
+- Used to make visualized dashboards
+- We already have our grafana installed earlier with helm on port 80 and mapped with 31000
+- Command :- **kubectl port-forward svc/kind-prometheus-grafana -n monitoring 3000:80 --address=0.0.0.0 &**
+
+![image](https://github.com/user-attachments/assets/505af71d-0e30-4055-8e34-a512ff2163c2)
+
+- Expose the port 3000 in SG of EC2 for grafana. We can see below UI
+
+![image](https://github.com/user-attachments/assets/0a6ef73d-0473-4a2c-a677-1a008dc410aa)
+
+- Grafana is used to add data source and make dashboards. From DS we get data and goes to grafana. Dashboards will make better visualization of data
+- We can make dashboards, set alerts, see connections, do administration
+
+![image](https://github.com/user-attachments/assets/a907c357-81c3-434f-92a1-71c7992df07d)
+
+- In administration - Create users.
+- If we dont want to give access to our dashboards, give only view access
+
+![image](https://github.com/user-attachments/assets/f90f40a9-5c54-4c24-b7c6-586f88e9e024)
+
+- To setup connections in grafana. As we have DS and dashboards here. We already have DS added here as we've deployed prom and grafana through helm
+
+![image](https://github.com/user-attachments/assets/e9cc99e0-35a4-4a28-bd24-e10309488463)
+
+- Now to make dashboard using these DS - Build dashboard - Add visualization
+
+![image](https://github.com/user-attachments/assets/6ab45922-dd48-4262-baf7-3e9c1d6f009d)
+
+- Now select the DS to add. Select metric, add labels and run query to get data 
+
+![image](https://github.com/user-attachments/assets/ead2a7d0-d47e-4b66-b3e6-61a29e72aa69)
+
+- On the right top we can see suggestions for dashboard types and apply as required
+
+![image](https://github.com/user-attachments/assets/187dd2da-e6c4-4235-b0d9-441d2bb0503c)
+
+- We can also add other visualizations as needed
+
+- Now to add K8S dashboards- Go to grafana dashboards on google and search K8S there - Add dashboard of choice - Click
+  - To import it on our grafana - Copy ID to clipboard - Go to grafana server - Dashboards - New -Import 
+ 
+![image](https://github.com/user-attachments/assets/a2585aa7-018e-4775-8bd8-73561193f1f4)
+![image](https://github.com/user-attachments/assets/35f9382b-3ce5-4f0e-975b-8152cc1a77ea)
+![image](https://github.com/user-attachments/assets/e72a7de0-3d97-4db2-ba40-bbd3ba80bd23)
+
+By this way we've setup prometheus and grafana
+
