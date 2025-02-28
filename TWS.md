@@ -55,6 +55,79 @@ Practical
 ![image](https://github.com/user-attachments/assets/8f8a55d3-e34a-43c9-ac07-15bc0d3b4554)
 ![image](https://github.com/user-attachments/assets/014449d9-de91-4295-b6f0-ac03c2b4467d)
 
-- Now as we've deployed all apps, we've to monitor all apps.
+- Now as we've deployed all apps on K8S, we've to monitor all apps. So we've to put metrics for apps using prometheus
 
+- Prometheus is a time-series database. In our K8S cluster suppose we make graph of data time vs CPU and provide to prometheus which stores that data in TSDB using which we can make graphs for visual understanding
+- Prometheus basically has 2 servers :- one for scraping (to extract data from cluster) and other for query (for the data extracted)
 
+- Now we've app running in K8S cluster. We need multiple manifest files to make prometheus. If we package those files, to install, uninstall, manage becomes easier
+- So here K8S package manager can be used :- HELM. It helps install prometheus, grafana using one click. It is package manager for K8S manifest files using which we can manage resources on K8S.
+
+- So to install prometheus we need to install HELM first.
+
+- getHelm.sh - shell script will be created which has all commands to install heml
+
+![image](https://github.com/user-attachments/assets/36b72c56-47e0-4913-be4c-f434278601cf)
+
+- The manifest files inside helm are called "Helm Charts"
+
+- Using below command we make prometheus community named repo where all the helm charts of prometheus get added in it.
+
+![image](https://github.com/user-attachments/assets/728362c2-5b72-465f-9d7b-e22e5e7eb4e1)
+
+- Now install one stable chart as well
+
+![image](https://github.com/user-attachments/assets/1f547b3f-d860-479d-b9de-27d9d2525974)
+
+- Now update the repo :- helm repo update
+
+- Now create a K8S namespace "monitoring" inside which we'll be having our prometheus and grafana installed. :- kubernetes create namespace monitoring
+
+- Now we'll provide 30000 as node port to prometheus, set service type as node-port, give 31000 port to grafana, grafana service to be node-port again, alert manager at 32000 with node-port, also made node-exporter using which we feed data to prometheus using port 32001. Using this command helm will install everything for us
+
+- Command :- **helm install kind-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set prometheus.service.type=NodePort --set grafana.service.nodePort=31000 --set grafana.service.type=NodePort --set alertmanager.service.nodePort=32000 --set alertmanager.service.type=NodePort --set prometheus-node-exporter.service.nodePort=32001 --set prometheus-node-exporter.service.type=NodePort**
+
+![image](https://github.com/user-attachments/assets/b7db6f24-98d4-4be4-bacc-45999c241c7c)
+
+- We can get list of pods in created namespace "monitoring" using command :- **kubectl get pods -n monitoring**
+
+![image](https://github.com/user-attachments/assets/433377a8-5bd1-4a74-a614-f06dee23fb18)
+
+- For K8S node's CPU, memory, network, etc details are exported using node exporter and given to prometheus.
+
+- To get services :- **kubectl get svc -n monitoring**
+
+![image](https://github.com/user-attachments/assets/b91958b8-7b84-4c7f-bb04-85e8fe53e437)
+
+- To forward the port means if we forward using CLI and then go inside our EC2 - security - expose port 9090, we can see our prometheus server
+
+![image](https://github.com/user-attachments/assets/05aac733-8574-4906-88e3-3434985f608b)
+![image](https://github.com/user-attachments/assets/dde0c581-3387-40c6-b2da-276faa625ae1)
+
+- Now open new tab and take publicCIP of instance with port 9090, we can see prometheus
+
+![image](https://github.com/user-attachments/assets/62d7bb93-2656-4e41-9a8a-6e6d5ed4cf96)
+
+- To check services are connected, K8S cluster data, go to status - targets
+  - here we can see prom alert manager extracting the data, API server everything is visualized in metrics
+ 
+![image](https://github.com/user-attachments/assets/70df0ada-a625-4ab5-a8be-b7bf1bc437fb)
+
+- Go to graphs. inside expression we write promQL.
+  - If we've to check container CPU usage in default K8S namespace and get its rate :- **sum (rate (container_cpu_usage_seconds_total{namespace="default"}[1m])) / sum (machine_cpu_cores) * 100**
+  - This means calculate rate of container cpu usage seconds. If we execute the query and go to graphs, we get below as CPU usage adjusting time range.  
+
+![image](https://github.com/user-attachments/assets/9ae570b3-08a1-4a1b-85b3-5c3b2ccc125d)
+
+  - To check network in pod :- sum(rate(container_network_receive_bytes_total{namespace="default"}[5m])) by (pod)
+
+![image](https://github.com/user-attachments/assets/9760a455-9586-44c8-83a9-17a8e85f56ef)
+
+- Now lets expose our ""vote" app :- kubectl port-forward svc/vote 5000:5000 --address=0.0.0.0 &. Also add its security groups in EC2
+  - Now if we use the public IP and with port 5000, we can see our app is running. So now if we check our CPU, we can see CPU is increased
+ 
+![image](https://github.com/user-attachments/assets/5cbc9895-08db-47f4-9da0-bb356e2fbdf0)
+
+Grafana 
+-
+- 
