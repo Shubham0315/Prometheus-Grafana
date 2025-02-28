@@ -56,4 +56,59 @@ Demo
 
 ![image](https://github.com/user-attachments/assets/35147fe2-3064-428e-83ad-895cb857c807)
 
+- To add grafana helm charts
+
+![image](https://github.com/user-attachments/assets/33f3c6cd-9c74-4a3d-b1fa-c59369be02fd)
+
+- To install grafana on K8S minikube cluster :- **helm install grafana grafana/grafana**
+
+- To visualize info from prometheus on grafana dashboard, we need password to login to grafana
+
+![image](https://github.com/user-attachments/assets/57a6f991-2bdc-4f58-9e82-7289902836f1)
+![image](https://github.com/user-attachments/assets/f2486903-d883-490e-a5ee-d7d92e112972)
+
+- To expose grafana svc onto node-port mode
+
+![image](https://github.com/user-attachments/assets/2c2b3ded-9d93-4da1-8bb4-034d3da69749)
+
+- Expose using publicIP:31281, login using user and passcode
+ 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- Now we need to create prometheus as data source for grafana as grafana is for visualization so it needs metrics to create dashboards
+  - Create data source - prometheus - provide IP address of prometheus - Save and test
+ 
+  ![image](https://github.com/user-attachments/assets/11cc6dd7-1fed-467c-8773-15c846d457eb)
+  ![image](https://github.com/user-attachments/assets/e0e8872d-da3a-4e34-9789-550fc5c64abf)
+  ![image](https://github.com/user-attachments/assets/c9ad068b-93ec-405e-8371-f31acd723d6a)
+
+  - Now grafana will be able to retrieve info from prometheus, use prom as DS
+ 
+- Now to create dashboard
+
+![image](https://github.com/user-attachments/assets/aa250f09-852d-4e1e-be68-ea128bb09256)
+
+  - We can import dashboard as well (described in TWS)
+  - For starting import - use ID as 3662 and create
+  - This dashboard retrieves info from our minikube cluster
+
+![image](https://github.com/user-attachments/assets/469d62e6-8a0d-402f-b67e-39d042d14f56)
+
+  
+- While executing queries in prometheus, we get info in JSON format
+
+- To know deployment status, running replicas, status of svc, we use kube-state-metrics
+
+![image](https://github.com/user-attachments/assets/df1ed72f-6575-4bdb-984b-65cd25a04394)
+
+- Run the kube-state metrics in browser now, we can see metrics of things in K8S cluster
+  - We can take queries from there and execute on prometheus, we get info
+ 
+  ![image](https://github.com/user-attachments/assets/32938f91-0ff0-45e4-8f65-3d56ef8073b8)
+  ![image](https://github.com/user-attachments/assets/1f6559f2-2ddc-4b4d-9acc-d99348b38bb6)
+
+  - Grafana takes same info and gives o/p in visualization pattern
+  - Using grafana we check K8s info like node uptime, status of k8s api server, status of etcd
+ 
+  ![image](https://github.com/user-attachments/assets/948f2f91-aa05-4f16-a6af-65ed09f82bf1)
 
