@@ -32,3 +32,43 @@ What are exporters in Prometheus?
 -
 - They help to expose metrics from different systems or services so that prometheus can scrape them and store them as time series data
 - Prometheus itself is not aware of every system we want to monitor, so exporters bridge gap by transforming metrics from various services (like DB, web servers, OS) into a format Prometheus can scrape and understand
+
+- Node exporter
+  - Monitor system level metrics like CPU, memory, disk I/O, network stats, etc
+  - Used to monitor health and performance of Linux based servers
+  - Exposes metrics at /metrics on a configured port  (generally 9100)
+ 
+- First install exporter directly on target system or use docker container to run them
+- Configure prometheus to scrape the exporter
+  - In prometheus.yml file
+    -     scrape_configs:
+           - job_name: 'node'
+             static_configs:
+              - targets: ['node-exporter:9100']
+  - Start prometheus and visualize with grafana
+
+--------------------------------------------------------------------------------------
+
+What is a metric in Prometheus? Name the types of metrics.
+-
+- Metric is a measurement of system's state or behaviour, tracked over time. Metrics are typically gathered from various sources like apps, infrastructure, or services and represent aspects like CPU, memory, HTTP request count
+
+- Counter
+  - Counter metrics represent monotonically increasing value. It can only increase or be reset at zero (restart)
+  - Used to track things like total requests or errors
+  -     http_requests_total{method="GET", status="200"} 1024
+
+- Guage
+  - It is a metric that represent a value that can go up or down over period of time like temp, memory use, current queue length
+  -     memory_usage_bytes{application="myapp"} 204800000
+
+- Histogram
+  - It samples a set of values and buckets them into predefined ranges. It also provides count of observations and sum of values
+  - We can measure request durations or response sizes where we want to group values into different ranges
+  -     http_request_duration_seconds_bucket{le="0.1"} 120
+        http_request_duration_seconds_bucket{le="0.5"} 300
+
+- Summary
+  - Similar to histogram but it tracks quantiles (%) over time, but also computes total count and sum for given metric
+ 
+--------------------------------------------------------------------------------------
